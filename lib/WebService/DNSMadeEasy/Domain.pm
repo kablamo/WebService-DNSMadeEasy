@@ -1,8 +1,7 @@
-package WebService::DNSMadeEasy::Domain;
-# ABSTRACT: A domain in the DNSMadeEasy API
+package WWW::DNSMadeEasy::Domain;
 
 use Moo;
-use WebService::DNSMadeEasy::Domain::Record;
+use WWW::DNSMadeEasy::Domain::Record;
 
 has name => (
 	# isa => 'Str',
@@ -11,7 +10,7 @@ has name => (
 );
 
 has dme => (
-	# isa => 'WebService::DNSMadeEasy',
+	# isa => 'WWW::DNSMadeEasy',
 	is => 'ro',
 	required => 1,
 );
@@ -61,7 +60,7 @@ sub create_record {
 
 	my $post_response = $self->dme->request('POST',$self->path_records,$data);
 
-	return WebService::DNSMadeEasy::Domain::Record->new({
+	return WWW::DNSMadeEasy::Domain::Record->new({
 		domain => $self,
 		id => $post_response->data->{id},
 		response => $post_response,
@@ -76,18 +75,15 @@ sub post {
 sub all_records {
 	my ( $self ) = @_;
 
-	my $response = $self->dme->request('GET',$self->path_records);
+	my $data = $self->dme->request('GET', $self->path_records)->as_hashref;
 
-	my @response_records = @{$response->data};
 	my @records;
-	for (0..$#response_records) {
-		push @records, WebService::DNSMadeEasy::Domain::Record->new({
-			domain => $self,
-			id => $response_records[$_]->{id},
-			response => $response,
-			response_index => $_,
-		});
-	}
+	push @records, WWW::DNSMadeEasy::Domain::Record->new({
+		domain     => $self,
+		id         => $_->{id},
+		as_hashref => $_,
+	}) for @$data;
+	
 	return @records;
 }
 
@@ -103,7 +99,7 @@ Name of the domain
 
 =attr dme
 
-L<WebService::DNSMadeEasy> object
+L<WWW::DNSMadeEasy> object
 
 =attr obj
 
@@ -126,20 +122,4 @@ Hash object representation given by DNSMadeEasy.
 =method $obj->vanity_name_servers
 
 =method $obj->vanity_id
-
-=head1 SUPPORT
-
-IRC
-
-  Join #duckduckgo on irc.freenode.net and highlight Getty or /msg me.
-
-Repository
-
-  http://github.com/Getty/p5-www-dnsmadeeasy
-  Pull request and additional contributors are welcome
-
-Issue Tracker
-
-  http://github.com/Getty/p5-www-dnsmadeeasy/issues
-
 

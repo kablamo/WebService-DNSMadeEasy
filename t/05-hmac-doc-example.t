@@ -4,16 +4,16 @@ use strict;
 use warnings;
 use Test::More;
 
-use WebService::DNSMadeEasy;
+use WWW::DNSMadeEasy;
 
 BEGIN {
 
-	my $dme = WebService::DNSMadeEasy->new({
+	my $dme = WWW::DNSMadeEasy->new({
 		api_key => '1c1a3c91-4770-4ce7-96f4-54c0eb0e457a',
 		secret => 'c9b5625f-9834-4ff8-baba-4ed5f32cae55',
 	});
 
-	isa_ok($dme,'WebService::DNSMadeEasy');
+	isa_ok($dme,'WWW::DNSMadeEasy');
 	
 	my $headers = $dme->get_request_headers(DateTime->new({
 		year => 2011,
