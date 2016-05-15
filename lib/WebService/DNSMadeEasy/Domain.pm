@@ -1,8 +1,8 @@
-package WWW::DNSMadeEasy::Domain;
+package WebService::DNSMadeEasy::Domain;
 # ABSTRACT: A domain in the DNSMadeEasy API
 
 use Moo;
-use WWW::DNSMadeEasy::Domain::Record;
+use WebService::DNSMadeEasy::Domain::Record;
 
 has name => (
 	# isa => 'Str',
@@ -11,7 +11,7 @@ has name => (
 );
 
 has dme => (
-	# isa => 'WWW::DNSMadeEasy',
+	# isa => 'WebService::DNSMadeEasy',
 	is => 'ro',
 	required => 1,
 );
@@ -61,7 +61,7 @@ sub create_record {
 
 	my $post_response = $self->dme->request('POST',$self->path_records,$data);
 
-	return WWW::DNSMadeEasy::Domain::Record->new({
+	return WebService::DNSMadeEasy::Domain::Record->new({
 		domain => $self,
 		id => $post_response->data->{id},
 		response => $post_response,
@@ -81,7 +81,7 @@ sub all_records {
 	my @response_records = @{$response->data};
 	my @records;
 	for (0..$#response_records) {
-		push @records, WWW::DNSMadeEasy::Domain::Record->new({
+		push @records, WebService::DNSMadeEasy::Domain::Record->new({
 			domain => $self,
 			id => $response_records[$_]->{id},
 			response => $response,
@@ -103,7 +103,7 @@ Name of the domain
 
 =attr dme
 
-L<WWW::DNSMadeEasy> object
+L<WebService::DNSMadeEasy> object
 
 =attr obj
 

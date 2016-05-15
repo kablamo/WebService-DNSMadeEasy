@@ -1,4 +1,4 @@
-package WWW::DNSMadeEasy::Response;
+package WebService::DNSMadeEasy::Response;
 # ABSTRACT: DNSMadeEasy Response
 
 use Moo;
@@ -49,7 +49,7 @@ __END__
 
 =head1 SYNOPSIS
 
-  my $response = WWW::DNSMadeEasy->new(...)->request(...);
+  my $response = WebService::DNSMadeEasy->new(...)->request(...);
   if ($response->is_success) {
       my $data = $response->as_hashref;
       my $requestsremaining = $response->header('x-dnsme-requestsremaining');

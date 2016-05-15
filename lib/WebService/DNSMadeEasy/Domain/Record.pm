@@ -1,4 +1,4 @@
-package WWW::DNSMadeEasy::Domain::Record;
+package WebService::DNSMadeEasy::Domain::Record;
 # ABSTRACT: A domain record in the DNSMadeEasy API
 
 use Moo;
@@ -11,7 +11,7 @@ has id => (
 );
 
 has domain => (
-  # isa => 'WWW::DNSMadeEasy::Domain',
+  # isa => 'WebService::DNSMadeEasy::Domain',
   is => 'ro',
   required => 1,
 );
@@ -22,7 +22,7 @@ has response_index => (
 );
 
 has response => (
-  # isa => 'WWW::DNSMadeEasy::Response',
+  # isa => 'WebService::DNSMadeEasy::Response',
   is => 'rw',
   builder => 1,
   lazy => 1,
@@ -75,7 +75,7 @@ sub put {
     my $self = shift;
     my %data = ( @_ % 2 == 1 ) ? %{ $_[0] } : @_;
     my $put_response = $self->domain->dme->request('PUT', $self->path, \%data);
-    return WWW::DNSMadeEasy::Domain::Record->new({
+    return WebService::DNSMadeEasy::Domain::Record->new({
       domain => $self->domain,
       id => $put_response->data->{id},
       response => $put_response,

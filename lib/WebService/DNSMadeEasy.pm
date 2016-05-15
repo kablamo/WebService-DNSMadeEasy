@@ -1,4 +1,4 @@
-package WWW::DNSMadeEasy;
+package WebService::DNSMadeEasy;
 # ABSTRACT: Accessing DNSMadeEasy API
 
 use Moo;
@@ -9,8 +9,8 @@ use LWP::UserAgent;
 use HTTP::Request;
 use JSON;
 
-use WWW::DNSMadeEasy::Domain;
-use WWW::DNSMadeEasy::Response;
+use WebService::DNSMadeEasy::Domain;
+use WebService::DNSMadeEasy::Response;
 
 our $VERSION ||= '0.0development';
 
@@ -91,7 +91,7 @@ sub request {
 		$request->content(encode_json($data));
 	}
 	my $res = $self->_http_agent->request($request);
-	$res = WWW::DNSMadeEasy::Response->new( http_response => $res );
+	$res = WebService::DNSMadeEasy::Response->new( http_response => $res );
 	$self->last_response($res);
 	die ' HTTP request failed: ' . $res->status_line . "\n" unless $res->is_success;
 	return $res;
@@ -129,12 +129,12 @@ sub create_domain {
 	    $params->{name} = $domain_name;
 	}
 
-	return WWW::DNSMadeEasy::Domain->create($params);
+	return WebService::DNSMadeEasy::Domain->create($params);
 }
 
 sub domain {
 	my ( $self, $domain_name ) = @_;
-	return WWW::DNSMadeEasy::Domain->new({
+	return WebService::DNSMadeEasy::Domain->new({
 		name => $domain_name,
 		dme => $self,
 	});
@@ -146,7 +146,7 @@ sub all_domains {
 	return if !$data->{list};
 	my @domains;
 	for (@{$data->{list}}) {
-		push @domains, WWW::DNSMadeEasy::Domain->new({
+		push @domains, WebService::DNSMadeEasy::Domain->new({
 			dme => $self,
 			name => $_,
 		});
@@ -161,14 +161,14 @@ sub all_domains {
 
 =head1 SYNOPSIS
 
-  use WWW::DNSMadeEasy; # or WWW::DME as shortname
+  use WebService::DNSMadeEasy; # or WebService::DME as shortname
 
-  my $dme = WWW::DNSMadeEasy->new({
+  my $dme = WebService::DNSMadeEasy->new({
     api_key => '1c1a3c91-4770-4ce7-96f4-54c0eb0e457a',
     secret => 'c9b5625f-9834-4ff8-baba-4ed5f32cae55',
   });
 
-  my $sandbox = WWW::DNSMadeEasy->new({
+  my $sandbox = WebService::DNSMadeEasy->new({
     api_key => '1c1a3c91-4770-4ce7-96f4-54c0eb0e457a',
     secret => 'c9b5625f-9834-4ff8-baba-4ed5f32cae55',
     sandbox => 1,
@@ -222,25 +222,25 @@ Here you can set a different http useragent for the requests, it defaults to the
 
 Arguments: $name
 
-Return value: L<WWW::DNSMadeEasy::Domain>
+Return value: L<WebService::DNSMadeEasy::Domain>
 
-Will be creating the domain $name on your account and returns the L<WWW::DNSMadeEasy::Domain> for this domain.
+Will be creating the domain $name on your account and returns the L<WebService::DNSMadeEasy::Domain> for this domain.
 
 =method $obj->domain
 
 Arguments: $name
 
-Return value: L<WWW::DNSMadeEasy::Domain>
+Return value: L<WebService::DNSMadeEasy::Domain>
 
-Returns the L<WWW::DNSMadeEasy::Domain> of the domain with name $name.
+Returns the L<WebService::DNSMadeEasy::Domain> of the domain with name $name.
 
 =method $obj->all_domains
 
 Arguments: None
 
-Return value: Array of L<WWW::DNSMadeEasy::Domain>
+Return value: Array of L<WebService::DNSMadeEasy::Domain>
 
-Returns an array of L<WWW::DNSMadeEasy::Domain> objects of all domains listed on this account.
+Returns an array of L<WebService::DNSMadeEasy::Domain> objects of all domains listed on this account.
 
 =head1 SUPPORT
 
