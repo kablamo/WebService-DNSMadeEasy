@@ -25,7 +25,7 @@ has http_agent_name => (is => 'lazy');
 has api_version     => (
     is      => 'ro',
     isa     => sub { $_ && ($_ eq '1.2' or $_ eq '2.0') },
-    default => sub { '1.2' },
+    default => sub { '2.0' },
 );
 
 sub _build__http_agent {
