@@ -1,6 +1,8 @@
-#!/usr/bin/env perl
+use strict;
+use warnings;
+use feature qw/say/;
 
-use Test::Most;
+use Test::More;
 use WWW::DNSMadeEasy;
 
 SKIP: {
@@ -9,36 +11,36 @@ SKIP: {
         unless defined $ENV{WWW_DNSMADEEASY_TEST_APIKEY} &&
                defined $ENV{WWW_DNSMADEEASY_TEST_SECRET};
 
-    my $dme = WWW::DNSMadeEasy->new(
+    my $domain_name = "stegasaurus.com";
+    my $dns = WWW::DNSMadeEasy->new(
         api_key     => $ENV{WWW_DNSMADEEASY_TEST_APIKEY},
         secret      => $ENV{WWW_DNSMADEEASY_TEST_SECRET},
         sandbox     => 1,
         api_version => '2.0',
     );
 
-    isa_ok($dme,'WWW::DNSMadeEasy');
+    isa_ok($dns,'WWW::DNSMadeEasy');
 
     subtest setup => sub {
-        my @domains = $dme->managed_domains;
-        $_->delete          for @domains;
-        $_->wait_for_delete for @domains;
+        my $domain = $dns->get_managed_domain($domain_name);
+        $domain->delete;
+        $domain->wait_for_delete;
         pass 'setup complete';
     };
 
     subtest 'managed domains' => sub {
-        my @domains = $dme->managed_domains;
+        my @domains = $dns->managed_domains;
         is scalar @domains, 0, "no managed domains";
 
-        my $domain  = $dme->create_managed_domain('boop.com');
-        @domains = $dme->managed_domains;
-        $_->wait_for_pending_action for @domains;
-        is scalar @domains, 1, "created a domain";
+        my $domain = $dns->create_managed_domain($domain_name);
+        $domain->wait_for_pending_action;
+        is $domain->name, $domain_name, "created $domain_name";
     };
 
     my $record1;
     my $record2;
     subtest 'records' => sub {
-        my $domain = $dme->get_managed_domain('boop.com');
+        my $domain = $dns->get_managed_domain($domain_name);
         like $domain->created, qr/\d+/, 'get_managed_domain()';
 
         my @records1 = $domain->records;
@@ -82,7 +84,7 @@ SKIP: {
             auto_failover      => JSON::true, 
             failover           => JSON::true, 
             http_file          => '/foo', 
-            http_fqdn          => 'boop.com', 
+            http_fqdn          => $domain_name, 
             http_query_string  => 'booper', 
             ip1                => '1.2.3.4', 
             ip2                => '2.3.4.5', 

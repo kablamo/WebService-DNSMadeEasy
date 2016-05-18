@@ -8,7 +8,7 @@ use DateTime::Format::HTTP;
 use Digest::HMAC_SHA1 qw(hmac_sha1 hmac_sha1_hex);
 use LWP::UserAgent;
 use HTTP::Request;
-use JSON;
+use JSON::MaybeXS;
 
 use WWW::DNSMadeEasy::Domain;
 use WWW::DNSMadeEasy::ManagedDomain;
@@ -40,9 +40,9 @@ sub _build_http_agent_name { __PACKAGE__.'/'.$VERSION }
 sub api_endpoint {
     my ( $self ) = @_;
     if ($self->sandbox) {
-        return 'http://api.sandbox.dnsmadeeasy.com/V'.$self->api_version.'/';
+        return 'https://api.sandbox.dnsmadeeasy.com/V'.$self->api_version.'/';
     } else {
-        return 'http://api.dnsmadeeasy.com/V'.$self->api_version.'/';
+        return 'https://api.dnsmadeeasy.com/V'.$self->api_version.'/';
     }
 }
 
@@ -183,103 +183,156 @@ sub managed_domains {
 
     use WWW::DNSMadeEasy;
   
-    my $dme = WWW::DNSMadeEasy->new({
-        api_key     => '1c1a3c91-4770-4ce7-96f4-54c0eb0e457a',
-        secret      => 'c9b5625f-9834-4ff8-baba-4ed5f32cae55',
+    my $dns = WebService::DNSMadeEasy->new({
+        api_key     => $api_key,
+        secret      => $secret,
         sandbox     => 1,     # defaults to 0
-        api_version => '2.0', # defaults to '2.0'
     });
 
-    # managed domains
-    my @managed_domains = $dme->managed_domains;
-    my $managed_domain  = $dme->get_managed_domain('example.com');
-    $domain->delete;
+=head1 DESCRIPTION
 
-    # records
-    my @records         = $domain->records;
-    my $record          = $domain->create_record(
+This distribution implements v2 of the DNSMadeEasy API as described in
+L<http://dnsmadeeasy.com/integration/pdf/API-Docv2.pdf>.
+
+=head1 ATTRIBUTES
+
+=attr api_key
+
+You can get find this here: L<https://cp.dnsmadeeasy.com/account/info>.
+
+=attr secret
+
+You can find this here: L<https://cp.dnsmadeeasy.com/account/info>.
+
+=attr sandbox
+
+Use the sandbox api endpoint, If set to true.  Creating a sandbox account is a
+good idea so you can test before messing with your live/production account.
+You can create a sandbox account here: L<https://sandbox.dnsmadeeasy.com>.
+
+=attr http_agent_name
+
+Here you can set the User-Agent http header.  
+
+=head1 DOMAINS
+
+These methods return L<WebService::DNSMadeEasy::ManagedDomain> objects.
+
+    my @domains = $dns->managed_domains;
+    my $domain  = $dns->get_managed_domain('example.com');
+    my $domain  = $dns->create_managed_domain('stegasaurus.com');
+
+Domain actions
+
+    $domain->delete;
+    $domain->update(...); # update domain attributes
+    my @records = $domain->records();                # Returns all records
+    my @records = $domain->records(type => 'CNAME'); # Returns all CNAME records
+    my @records = $domain->records(name => 'www');   # Returns all wwww records
+
+Domain attributes
+
+    $domain->as_hashref;
+    $domain->active_third_parties;
+    $domain->created;
+    $domain->delegate_name_servers;
+    $domain->folder_id;
+    $domain->gtd_enabled;
+    $domain->id;
+    $domain->name_servers;
+    $domain->pending_action_id;
+    $domain->process_multi;
+    $domain->updated;
+
+=head1 RECORDS
+
+These methods return L<WebService::DNSMadeEasy::ManagedDomain::Record> objects.
+
+    my @records = $domain->records;
+    my $record  = $domain->update(...);
+    my $record  = $domain->create_record(
         ttl          => 120,
         gtd_location => 'DEFAULT',
         name         => 'www',
         data         => '1.2.3.4',
         type         => 'A',
     );
+
+Record actions
+
     $record->delete;
+    $record->update(...); # update any record attribute
+    my $monitor = $record->get_monitor;
 
-=head1 DESCRIPTION
+Record attributes
 
-This distribution implements v2 of the DNSMadeEasy API. You require a business
-or corporate account to use this. You can't use it with the free test account
-neither with the small business account. 
+    $record->as_hashref;
+    $record->description;
+    $record->dynamic_dns;
+    $record->failed;
+    $record->failover;
+    $record->gtd_location;
+    $record->hard_link;
+    $record->id;
+    $record->keywords;
+    $record->monitor
+    $record->mxLevel;
+    $record->name;
+    $record->password;
+    $record->port;
+    $record->priority;
+    $record->redirect_type;
+    $record->source;
+    $record->source_id;
+    $record->title;
+    $record->ttl;
+    $record->type;
+    $record->value;
+    $record->weight;
 
-=head1 ATTRIBUTES
+=head1 MONITORS
 
-=attr api_key
+Monitor actions
+    $monitor->disable;     # disable failover and system monitoring
+    $monitor->update(...); # update any attribute
 
-The API key which you can obtain from this page L<https://cp.dnsmadeeasy.com/account/info>.
+Monitor attributes
 
-=attr secret
+    $monitor->auto_failover;
+    $monitor->contact_list_id;
+    $monitor->failover;
+    $monitor->http_file;
+    $monitor->http_fqdn;
+    $monitor->http_query_string;
+    $monitor->ip1;
+    $monitor->ip1_failed;
+    $monitor->ip2;
+    $monitor->ip2_failed;
+    $monitor->ip3;
+    $monitor->ip3_failed;
+    $monitor->ip4;
+    $monitor->ip4_failed;
+    $monitor->ip5;
+    $monitor->ip5_failed;
+    $monitor->max_emails;
+    $monitor->monitor;
+    $monitor->port;
+    $monitor->protocol_id;
+    $monitor->record_id;
+    $monitor->sensitivity;
+    $monitor->source;
+    $monitor->source_id;
+    $monitor->system_description;
 
-The secret can be found on the same page as the API key.
-
-=attr sandbox
-
-If set to true, this will activate the usage of the sandbox, instead of the live system.
-
-=attr http_agent_name
-
-Here you can set a different http useragent for the requests, it defaults to the package name including the distribution version.
-
-=head1 METHODS FOR API V2
-
-=method create_managed_domain($name)
-
-Creates the domain $name and returns a L<WWW::DNSMadeEasy::ManagedDomain> object.
-
-=method get_managed_domain($name)
-
-Searches for a domain with the name $name and returns a L<WWWW::DNSMadeEasy::ManagedDomain> object.
-
-=method managed_domains()
-
-Returns a list of L<WWWW::DNSMadeEasy::ManagedDomain> objects representing all domains.
-
-=head1 METHODS FOR API V1
-
-=method $obj->create_domain
-
-Arguments: $name
-
-Return value: L<WWW::DNSMadeEasy::Domain>
-
-Will be creating the domain $name on your account and returns the L<WWW::DNSMadeEasy::Domain> for this domain.
-
-=method $obj->domain
-
-Arguments: $name
-
-Return value: L<WWW::DNSMadeEasy::Domain>
-
-Returns the L<WWW::DNSMadeEasy::Domain> of the domain with name $name.
-
-=method $obj->all_domains
-
-Arguments: None
-
-Return value: Array of L<WWW::DNSMadeEasy::Domain>
-
-Returns an array of L<WWW::DNSMadeEasy::Domain> objects of all domains listed on this account.
-
-=head1 SEE ALSO
-
-    DNSMadeEasy REST API landing page
-    http://www.dnsmadeeasy.com/services/rest-api/
-
-    DNSMadeEasy documentation for v2.0
-    http://www.dnsmadeeasy.com/wp-content/uploads/2014/07/API-Docv2.pdf
-
-    DNSMadeEasy documentation for v1.2
-    http://www.dnsmadeeasy.com/wp-content/themes/appdev/pdf/API-Documentation-DM_20110921.pdf
+    $monitor->ips();       # returns a list of the failover ips
+    $monitor->protocol();  # returns the protocol being monitored
+                           #     protocol_id    protocol
+                           #         1      =>    TCP
+                           #         2      =>    UDP
+                           #         3      =>    HTTP
+                           #         4      =>    DNS
+                           #         5      =>    SMTP
+                           #         6      =>    HTTP
 
 =head1 LICENSE
 

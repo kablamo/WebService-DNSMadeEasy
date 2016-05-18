@@ -1,16 +1,13 @@
-#!/usr/bin/env perl
-
 use strict;
-use warnings;
-use Test::More;
+use Test::More 0.98;
 
-BEGIN {
-    use_ok('WWW::DME');
-    use_ok('WWW::DNSMadeEasy');
-    use_ok('WWW::DNSMadeEasy::Domain');
-    use_ok('WWW::DNSMadeEasy::Domain::Record');
-    use_ok('WWW::DNSMadeEasy::ManagedDomain');
-    use_ok('WWW::DNSMadeEasy::ManagedDomain::Record');
-}
+use_ok $_ for qw(
+    WebService::DNSMadeEasy
+    WebService::DNSMadeEasy::ManagedDomain
+    WebService::DNSMadeEasy::ManagedDomain::Record
+    WebService::DNSMadeEasy::Monitor
+    WebService::DNSMadeEasy::Response
+);
 
 done_testing;
+

@@ -1,7 +1,7 @@
 package WWW::DNSMadeEasy::Response;
 
 use Moo;
-use JSON;
+use JSON::MaybeXS;
 
 has http_response => (
     is       => 'ro',

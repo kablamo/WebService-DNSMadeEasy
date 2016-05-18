@@ -1,4 +1,5 @@
 package WWW::DNSMadeEasy::ManagedDomain;
+
 use Moo;
 use String::CamelSnakeKebab qw/lower_camel_case/;
 use WWW::DNSMadeEasy::ManagedDomain::Record;
@@ -109,52 +110,3 @@ sub records {
 }
 
 1;
-
-=encoding utf8
-
-=head1 METHODS
-
-=method delete()
-
-=method update(%data)
-
-=method records(%data)
-
-    my @records = $domain->records();                # Returns all records
-    my @records = $domain->records(type => 'CNAME'); # Returns all CNAME records
-    my @records = $domain->records(name => 'www');   # Returns all wwww records
-
-Returns a list of L<WWW::DNSMadeEasy::ManagedDomain::Record> objects.
-
-=method response
-
-Returns the response for this object
-
-=method as_hashref
-
-Returns json response data as a hashref
-
-=head1 MANAGED DOMAIN ATTRIBUTES
-
-=method name
-
-=method active_third_parties
-
-=method created
-
-=method delegate_name_servers
-
-=method folder_id
-
-=method gtd_enabled
-
-=method id
-
-=method name_servers
-
-=method pending_action_id
-
-=method process_multi
-
-=method updated
-
