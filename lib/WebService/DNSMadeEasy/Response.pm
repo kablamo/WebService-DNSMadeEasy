@@ -6,7 +6,15 @@ use JSON::MaybeXS;
 has http_response => (
     is       => 'ro',
     required => 1,
-    handles   => ['is_success', 'content', 'decoded_content', 'status_line', 'code', 'header', 'as_string'],
+    handles   => [qw/
+        is_success
+        content
+        decoded_content
+        status_line
+        code
+        header
+        as_string
+    /],
 );
 
 sub data { shift->as_hashref(@_) }
