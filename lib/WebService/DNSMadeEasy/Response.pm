@@ -68,32 +68,32 @@ Response object to fetch headers and error data
 
 =head1 METHODS
 
-=method is_success
+=head2 is_success
 
-=method content
+=head2 content
 
-=method decoded_content
+=head2 decoded_content
 
-=method status_line
+=head2 status_line
 
-=method code
+=head2 code
 
-=method header
+=head2 header
 
-=method as_string
+=head2 as_string
 
 All above are from L<HTTP::Response>
 
     my $requestsremaining = $response->header('x-dnsme-requestsremaining');
     my $json_data = $response->as_string;
 
-=method as_hashref
+=head2 as_hashref
 
     my $data = $response->as_hashref;
 
 convert response JSON to HashRef
 
-=method error
+=head2 error
 
     my @errors = $response->error;
 

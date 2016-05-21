@@ -154,23 +154,27 @@ L<http://dnsmadeeasy.com/integration/pdf/API-Docv2.pdf>.
 
 =head1 ATTRIBUTES
 
-=attr api_key
+=over 4
+
+=item api_key
 
 You can get find this here: L<https://cp.dnsmadeeasy.com/account/info>.
 
-=attr secret
+=item secret
 
 You can find this here: L<https://cp.dnsmadeeasy.com/account/info>.
 
-=attr sandbox
+=item sandbox
 
-Use the sandbox api endpoint, If set to true.  Creating a sandbox account is a
+Uses the sandbox api endpoint if set to true.  Creating a sandbox account is a
 good idea so you can test before messing with your live/production account.
 You can create a sandbox account here: L<https://sandbox.dnsmadeeasy.com>.
 
-=attr http_agent_name
+=item http_agent_name
 
 Here you can set the User-Agent http header.  
+
+=back
 
 =head1 DOMAINS
 
