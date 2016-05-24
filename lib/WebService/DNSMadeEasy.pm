@@ -54,7 +54,7 @@ sub managed_domains { WebService::DNSMadeEasy::ManagedDomain->find(client => shi
 
 =head1 NAME
 
-WebService::DNSMadeEasy
+WebService::DNSMadeEasy - Implements V2.0 of the DNSMadeEasy API
 
 =head1 SYNOPSIS
 
@@ -100,7 +100,7 @@ L<http://dnsmadeeasy.com/integration/pdf/API-Docv2.pdf>.
 
 =item api_key
 
-You can get find this here: L<https://cp.dnsmadeeasy.com/account/info>.
+You can find this here: L<https://cp.dnsmadeeasy.com/account/info>.
 
 =item secret
 
