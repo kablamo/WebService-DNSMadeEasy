@@ -5,7 +5,7 @@ use Moo;
 use WebService::DNSMadeEasy::Client;
 use WebService::DNSMadeEasy::ManagedDomain;
 
-our $VERSION = "0.01";
+our $VERSION = "0.02";
 
 has api_key           => (is => 'ro', required => 1);
 has secret            => (is => 'ro', required => 1);
