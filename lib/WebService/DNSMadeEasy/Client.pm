@@ -4,6 +4,7 @@ use Moo;
 use DateTime;
 use DateTime::Format::HTTP;
 use Digest::HMAC_SHA1 qw(hmac_sha1 hmac_sha1_hex);
+use DDP;
 
 with qw/MooX::Singleton Role::REST::Client/;
 
@@ -46,12 +47,17 @@ around qw/get put post delete/ => sub {
     $sub =~ s/WebService::DNSMadeEasy::Client::(\w+)$/$1/;
 
     $self->set_header($self->default_headers);
-    my $res = $orig->($self, @_);
-    
-    my $msg = sprintf "HTTP request failed\nRequest:  %s %s\nResponse: %s\n",
-        uc $sub, $url, $res->response->status_line;
 
-    die $msg if $res->failed;
+    my $res = $orig->($self, @_);
+
+    if ($res->failed) {
+        my $res_data = eval { $res->data } // {};
+        
+        my $msg = sprintf "HTTP request failed\nRequest:  %s %s\nResponse: %s\n",
+            uc $sub, $url, $res->response->status_line;
+
+        die $msg . p($res_data) . "\n";
+    }
 
     return $res;
 };
