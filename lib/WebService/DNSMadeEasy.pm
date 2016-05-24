@@ -128,7 +128,10 @@ it under the same terms as Perl itself.
 =head1 AUTHOR
 
 Eric Johnson E<lt>eric.git@iijo.orgE<gt>
-Forked from Torsten Raudssus's WWW::DNSMadeEasy module.
+
+This module started as a fork of Torsten Raudssus's WWW::DNSMadeEasy module,
+but its pretty much a total rewrite especially since v1 and v2 of the DNS Made
+Easy protocol are very different.
 
 =cut
 
