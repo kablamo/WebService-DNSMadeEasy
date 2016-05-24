@@ -71,6 +71,7 @@ sub managed_domains { WebService::DNSMadeEasy::ManagedDomain->find(client => shi
     ...
 
     # RECORDS - see WebService::DNSMadeEasy::ManagedDomain::Record
+    my $record  = $domain->create_record(...);
     my @records = $domain->records();                # Returns all records
     my @records = $domain->records(type => 'CNAME'); # Returns all CNAME records
     my @records = $domain->records(name => 'www');   # Returns all wwww records
@@ -112,127 +113,6 @@ You can create a sandbox account here: L<https://sandbox.dnsmadeeasy.com>.
 Here you can set the User-Agent http header.  
 
 =back
-
-=head1 DOMAINS
-
-These methods return L<WebService::DNSMadeEasy::ManagedDomain> objects.
-
-    my @domains = $dns->managed_domains;
-    my $domain  = $dns->get_managed_domain('example.com');
-    my $domain  = $dns->create_managed_domain('stegasaurus.com');
-
-Domain actions
-
-    $domain->delete;
-    $domain->update(...); # update domain attributes
-    my @records = $domain->records();                # Returns all records
-    my @records = $domain->records(type => 'CNAME'); # Returns all CNAME records
-    my @records = $domain->records(name => 'www');   # Returns all wwww records
-
-Domain attributes
-
-    $domain->data; # returns all attributes as a hashref
-    $domain->active_third_parties;
-    $domain->created;
-    $domain->delegate_name_servers;
-    $domain->folder_id;
-    $domain->gtd_enabled;
-    $domain->id;
-    $domain->name_servers;
-    $domain->pending_action_id;
-    $domain->process_multi;
-    $domain->updated;
-
-=head1 RECORDS
-
-These methods return L<WebService::DNSMadeEasy::ManagedDomain::Record> objects.
-
-    my @records = $domain->records;
-    my $record  = $domain->update(...);
-    my $record  = $domain->create_record(
-        ttl          => 120,
-        gtd_location => 'DEFAULT',
-        name         => 'www',
-        data         => '1.2.3.4',
-        type         => 'A',
-    );
-
-Record actions
-
-    $record->delete;
-    $record->update(...); # update any record attribute
-    my $monitor = $record->get_monitor;
-
-Record attributes
-
-    $record->data; # returns all attributes as a hashref
-    $record->description;
-    $record->dynamic_dns;
-    $record->failed;
-    $record->failover;
-    $record->gtd_location;
-    $record->hard_link;
-    $record->id;
-    $record->keywords;
-    $record->monitor
-    $record->mxLevel;
-    $record->name;
-    $record->password;
-    $record->port;
-    $record->priority;
-    $record->redirect_type;
-    $record->source;
-    $record->source_id;
-    $record->title;
-    $record->ttl;
-    $record->type;
-    $record->value;
-    $record->weight;
-
-=head1 MONITORS
-
-Monitor actions
-    $monitor->disable;     # disable failover and system monitoring
-    $monitor->update(...); # update any attribute
-
-Monitor attributes
-
-    $monitor->data; # returns all attributes as a hashref
-    $monitor->auto_failover;
-    $monitor->contact_list_id;
-    $monitor->failover;
-    $monitor->http_file;
-    $monitor->http_fqdn;
-    $monitor->http_query_string;
-    $monitor->ip1;
-    $monitor->ip1_failed;
-    $monitor->ip2;
-    $monitor->ip2_failed;
-    $monitor->ip3;
-    $monitor->ip3_failed;
-    $monitor->ip4;
-    $monitor->ip4_failed;
-    $monitor->ip5;
-    $monitor->ip5_failed;
-    $monitor->max_emails;
-    $monitor->monitor;
-    $monitor->port;
-    $monitor->protocol_id;
-    $monitor->record_id;
-    $monitor->sensitivity;
-    $monitor->source;
-    $monitor->source_id;
-    $monitor->system_description;
-
-    $monitor->ips();       # returns a list of the failover ips
-    $monitor->protocol();  # returns the protocol being monitored
-                           #     protocol_id    protocol
-                           #         1      =>    TCP
-                           #         2      =>    UDP
-                           #         3      =>    HTTP
-                           #         4      =>    DNS
-                           #         5      =>    SMTP
-                           #         6      =>    HTTP
 
 =head1 LICENSE
 

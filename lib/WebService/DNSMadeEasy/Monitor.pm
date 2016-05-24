@@ -103,31 +103,37 @@ sub create {
 
 1;
 
+# TODO: add this to synposis when client class is a singleton
+#
+#    use WebService::DNSMadeEasy::Monitor;
+#
+#    my $monitor = WebService::DNSMadeEasy::Monitor->new(
+#        client    => $client,
+#        record_id => $record_id,
+#    );
+#
+#    my $monitor = WebService::DNSMadeEasy::Monitor->create(
+#        client             => $client,
+#        record_id          => $record_id,
+#        port               => 8080,
+#        failover           => 'true',
+#        ip1                => '1.1.1.1',
+#        ip2                => '2.2.2.2',
+#        protocol_id        => 3,
+#        monitor            => 'true',
+#        sensitivity        => 5,
+#        system_description => 'Test',
+#        max_emails         => 1,
+#        auto_failover      => 'false',
+#    );
+
 
 =head1 SYNOPSIS
 
-    use WebService::DNSMadeEasy::Monitor;
+    # Returns a L<WebService::DNSMadeEasy::Monitor> object
+    my $monitor = $record->get_monitor;
 
-    my $monitor = WebService::DNSMadeEasy::Monitor->new(
-        client    => $client,
-        record_id => $record_id,
-    );
-
-    my $monitor = WebService::DNSMadeEasy::Monitor->create(
-        client             => $client,
-        record_id          => $record_id,
-        port               => 8080,
-        failover           => 'true',
-        ip1                => '1.1.1.1',
-        ip2                => '2.2.2.2',
-        protocol_id        => 3,
-        monitor            => 'true',
-        sensitivity        => 5,
-        system_description => 'Test',
-        max_emails         => 1,
-        auto_failover      => 'false',
-    );
-
+    # actions
     $monitor->update(...); # update some attributes
     $monitor->disable;     # disable failover and system monitoring
 
@@ -159,6 +165,7 @@ sub create {
     $monitor->source_id;
     $monitor->system_description;
 
+    # helpers
     $monitor->ips();       # returns a list of the failover ips
     $monitor->protocol();  # returns the protocol being monitored
                            #     protocol_id    protocol

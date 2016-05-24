@@ -186,41 +186,68 @@ sub create_monitor {
 
 1;
 
+# TODO: add this to synposis when client class is a singleton
+#
+#    use WebService::DNSMadeEasy::ManagedDomain::Record;
+#
+#    my $record = WebService::DNSMadeEasy::ManagedDomain::Record->new(
+#        client => $client,
+#        name   => $name,
+#    );
+#
+#    my @records = WebService::DNSMadeEasy::ManagedDomain::Record->find(
+#        client => $client,
+#    );
+#
+#    my $record = WebService::DNSMadeEasy::ManagedDomain::Record->create(
+#        client => $client,
+#        ...
+#    );
+
 =head1 SYNOPSIS
 
-    use WebService::DNSMadeEasy::ManagedDomain::Record;
-
-    my $record = WebService::DNSMadeEasy::ManagedDomain::Record->new(
-        client => $client,
-        name   => $name,
-    );
-
-    my @records = WebService::DNSMadeEasy::ManagedDomain::Record->find(
-        client => $client,
-    );
-
-    my $record = WebService::DNSMadeEasy::ManagedDomain::Record->create(
-        client => $client,
-        ...
-    );
-
-    $record->delete;
-    $record->update(...);
-
+    # These methods return L<WebService::DNSMadeEasy::ManagedDomain::Record> objects.
     my @records = $domain->records();                # Returns all records
     my @records = $domain->records(type => 'CNAME'); # Returns all CNAME records
     my @records = $domain->records(name => 'www');   # Returns all wwww records
+    my $record  = $domain->create_record(
+        name         => 'www',
+        value        => '1.2.3.4',
+        type         => 'A',
+        gtd_location => 'DEFAULT',
+        ttl          => 120,
+    );
 
-    $domain->data; # returns all attributes as a hashref
-    $domain->active_third_parties;
-    $domain->created;
-    $domain->delegate_name_servers;
-    $domain->folder_id;
-    $domain->gtd_enabled;
-    $domain->id;
-    $domain->name_servers;
-    $domain->pending_action_id;
-    $domain->process_multi;
-    $domain->updated;
+    # actions
+    $record->update(...);
+    $record->delete;
+
+    # attributes
+    $record->data; # returns all attributes as a hashref
+    $record->description;
+    $record->dynamic_dns;
+    $record->failed;
+    $record->failover;
+    $record->gtd_location;
+    $record->hard_link;
+    $record->id;
+    $record->keywords;
+    $record->monitor
+    $record->mxLevel;
+    $record->name;
+    $record->password;
+    $record->port;
+    $record->priority;
+    $record->redirect_type;
+    $record->source;
+    $record->source_id;
+    $record->title;
+    $record->ttl;
+    $record->type;
+    $record->value;
+    $record->weight;
+
+    # Returns a L<WebService::DNSMadeEasy::Monitor> object
+    my $monitor = $record->get_monitor;
 
 =cut

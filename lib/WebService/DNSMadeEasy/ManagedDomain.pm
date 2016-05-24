@@ -116,33 +116,38 @@ sub records {
 
 1;
 
+# TODO: add this to synposis when client class is a singleton
+#
+#    use WebService::DNSMadeEasy::ManagedDomain;
+#
+#    my $domain = WebService::DNSMadeEasy::ManagedDomain->new(
+#        client => $client,
+#        name   => $name,
+#    );
+#
+#    my @domains = WebService::DNSMadeEasy::ManagedDomain->find(
+#        client => $client,
+#    );
+#
+#    my $domain = WebService::DNSMadeEasy::ManagedDomain->create(
+#        client => $client,
+#        name   => $name,
+#    );
+
 =head1 SYNOPSIS
 
-    use WebService::DNSMadeEasy::Monitor;
+    # These methods return L<WebService::DNSMadeEasy::ManagedDomain> objects.
+    my @domains = $dns->managed_domains;
+    my $domain  = $dns->get_managed_domain('example.com');
+    my $domain  = $dns->create_managed_domain('stegasaurus.com');
 
-    my $domain = WebService::DNSMadeEasy::Monitor->new(
-        client => $client,
-        name   => $name,
-    );
-
-    my @domains = WebService::DNSMadeEasy::Monitor->find(
-        client => $client,
-    );
-
-    my $domain = WebService::DNSMadeEasy::Monitor->create(
-        client => $client,
-        name   => $name,
-    );
-
+    # actions
     $domain->delete;
     $domain->update(...); # update some domain attributes
     $domain->wait_for_delete;
     $domain->wait_for_pending_action;
 
-    my @records = $domain->records();                # Returns all records
-    my @records = $domain->records(type => 'CNAME'); # Returns all CNAME records
-    my @records = $domain->records(name => 'www');   # Returns all wwww records
-
+    # attributes
     $domain->data; # returns all attributes as a hashref
     $domain->active_third_parties;
     $domain->created;
@@ -154,6 +159,18 @@ sub records {
     $domain->pending_action_id;
     $domain->process_multi;
     $domain->updated;
+
+    # These methods return L<WebService::DNSMadeEasy::ManagedDomain::Record> objects.
+    $domain->create_record(
+        name         => 'www',
+        type         => 'A',
+        value        => '1.2.3.4',
+        gtd_location => 'DEFAULT',
+        ttl          => 120,
+    );
+    my @records = $domain->records();                # Returns all records
+    my @records = $domain->records(type => 'CNAME'); # Returns all CNAME records
+    my @records = $domain->records(name => 'www');   # Returns all wwww records
 
 =cut
 
