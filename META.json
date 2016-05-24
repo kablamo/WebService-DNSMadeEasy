@@ -1,5 +1,5 @@
 {
-   "abstract" : "It's new $module",
+   "abstract" : "Implements V2.0 of the DNSMadeEasy API",
    "author" : [
       "Eric Johnson <eric.git@iijo.org>"
    ],
@@ -28,7 +28,8 @@
    "prereqs" : {
       "configure" : {
          "requires" : {
-            "Module::Build::Tiny" : "0.035"
+            "Module::Build::Tiny" : "0.035",
+            "perl" : "5.008_001"
          }
       },
       "develop" : {
@@ -42,16 +43,34 @@
       },
       "runtime" : {
          "requires" : {
-            "perl" : "5.008001"
+            "DateTime" : "0",
+            "DateTime::Format::HTTP" : "0",
+            "Digest::HMAC_SHA1" : "0",
+            "HTTP::Request" : "0",
+            "Moo" : "0",
+            "Role::REST::Client" : "0",
+            "String::CamelSnakeKebab" : "0"
          }
       },
       "test" : {
          "requires" : {
+            "JSON" : "0",
             "Test::More" : "0.98"
          }
       }
    },
    "release_status" : "unstable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/kablamo/WebService-DNSMadeEasy/issues"
+      },
+      "homepage" : "https://github.com/kablamo/WebService-DNSMadeEasy",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/kablamo/WebService-DNSMadeEasy.git",
+         "web" : "https://github.com/kablamo/WebService-DNSMadeEasy"
+      }
+   },
    "version" : "0.01",
    "x_authority" : "cpan:KABLAMO"
 }
