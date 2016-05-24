@@ -1,151 +1,88 @@
-package WWW::DNSMadeEasy;
-
-use feature qw/say/;
+package WebService::DNSMadeEasy;
 
 use Moo;
-use DateTime;
-use DateTime::Format::HTTP;
-use Digest::HMAC_SHA1 qw(hmac_sha1 hmac_sha1_hex);
-use LWP::UserAgent;
-use HTTP::Request;
-use JSON::MaybeXS;
 
-use WWW::DNSMadeEasy::Domain;
-use WWW::DNSMadeEasy::ManagedDomain;
-use WWW::DNSMadeEasy::Response;
+use WebService::DNSMadeEasy::Client;
+use WebService::DNSMadeEasy::ManagedDomain;
 
 our $VERSION = "0.01";
 
-has api_key         => (is => 'ro', required => 1);
-has secret          => (is => 'ro', required => 1);
-has sandbox         => (is => 'ro', default => sub { 0 });
-has last_response   => (is => 'rw');
-has _http_agent     => (is => 'lazy');
-has http_agent_name => (is => 'lazy');
-has api_version     => (
-    is      => 'ro',
-    isa     => sub { $_ && ($_ eq '1.2' or $_ eq '2.0') },
-    default => sub { '2.0' },
-);
+has api_key           => (is => 'ro', required => 1);
+has secret            => (is => 'ro', required => 1);
+has sandbox           => (is => 'ro', default => sub { 0 });
+has user_agent_header => (is => 'rw', lazy => 1, builder => 1);
+has client            => (is => 'lazy', handles => [qw/get/]);
 
-sub _build__http_agent {
+sub _build_user_agent_header { __PACKAGE__ . "/" . $VERSION }
+
+sub _build_client {
     my $self = shift;
-    my $ua = LWP::UserAgent->new;
-    $ua->agent($self->http_agent_name);
-    return $ua;
+    my $client = WebService::DNSMadeEasy::Client->new(
+        api_key           => $self->api_key,
+        secret            => $self->secret,
+        sandbox           => $self->sandbox,
+        user_agent_header => $self->user_agent_header,
+    );
+
+    $client->user_agent_header($self->user_agent_header)
+        if $self->user_agent_header;
+
+    return $client;
 }
-
-sub _build_http_agent_name { __PACKAGE__.'/'.$VERSION }
-
-sub api_endpoint {
-    my ( $self ) = @_;
-    if ($self->sandbox) {
-        return 'https://api.sandbox.dnsmadeeasy.com/V'.$self->api_version.'/';
-    } else {
-        return 'https://api.dnsmadeeasy.com/V'.$self->api_version.'/';
-    }
-}
-
-sub get_request_headers {
-    my ( $self, $dt ) = @_;
-    $dt = DateTime->now->set_time_zone( 'GMT' ) if !$dt;
-    my $date_string = DateTime::Format::HTTP->format_datetime($dt);
-    return {
-        'x-dnsme-requestDate' => $date_string,
-        'x-dnsme-apiKey'      => $self->api_key,
-        'x-dnsme-hmac'        => hmac_sha1_hex($date_string, $self->secret),
-    };
-}
-
-sub request {
-    my ( $self, $method, $path, $data ) = @_;
-    my $url = $self->api_endpoint.$path;
-    say "$method $url" if $ENV{WWW_DME_DEBUG};
-    my $request = HTTP::Request->new( $method => $url );
-    my $headers = $self->get_request_headers;
-    $request->header($_ => $headers->{$_}) for (keys %{$headers});
-    $request->header('Accept' => 'application/json');
-    if (defined $data) {
-        $request->header('Content-Type' => 'application/json');
-        $request->content(encode_json($data));
-        use DDP; p $data if $ENV{WWW_DME_DEBUG};
-    }
-    my $res = $self->_http_agent->request($request);
-    $res = WWW::DNSMadeEasy::Response->new( http_response => $res );
-    say $res->content if $ENV{WWW_DME_DEBUG};
-    $self->last_response($res);
-    die ' HTTP request failed: ' . $res->status_line . "\n" unless $res->is_success;
-    return $res;
-}
-
-sub requests_remaining {
-    my ( $self ) = @_;
-    return $self->last_response ? $self->last_response->requests_remaining : undef;
-}
-
-sub last_request_id {
-    my ( $self ) = @_;
-    return $self->last_response ? $self->last_response->request_id : undef;
-}
-
-sub request_limit {
-    my ( $self ) = @_;
-    return $self->last_response ? $self->last_response->request_limit : undef;
-}
-
-#
-# V2 Managed domains (TODO - move this into a role)
-#
-
-sub domain_path {'dns/managed/'}
 
 sub create_managed_domain {
     my ($self, $name) = @_;
-    my $data     = {name => $name};
-    my $response = $self->request(POST => $self->domain_path, $data);
-    return WWW::DNSMadeEasy::ManagedDomain->new(
-        dme        => $self,
-        name       => $response->as_hashref->{name},
-        as_hashref => $response->as_hashref,
+    return WebService::DNSMadeEasy::ManagedDomain->create(
+        client => $self->client,
+        name   => $name,
     );
 }
 
 sub get_managed_domain {
     my ($self, $name) = @_;
-    return WWW::DNSMadeEasy::ManagedDomain->new(
-        name => $name,
-        dme  => $self,
+    return WebService::DNSMadeEasy::ManagedDomain->new(
+        client => $self->client,
+        name   => $name,
     );
 }
 
-sub managed_domains {
-    my ($self) = @_;
-    my $data   = $self->request(GET => $self->domain_path)->as_hashref->{data};
-
-    my @domains;
-    push @domains, WWW::DNSMadeEasy::ManagedDomain->new({
-        dme  => $self,
-        name => $_->{name},
-    }) for @$data;
-
-    return @domains;
-}
-
+sub managed_domains { WebService::DNSMadeEasy::ManagedDomain->find(client => shift->client) }
 
 1;
-
 
 =encoding utf8
 
 =head1 SYNOPSIS
 
-    use WWW::DNSMadeEasy;
+    use WebService::DNSMadeEasy;
   
     my $dns = WebService::DNSMadeEasy->new({
-        api_key     => $api_key,
-        secret      => $secret,
-        sandbox     => 1,     # defaults to 0
+        api_key => $api_key,
+        secret  => $secret,
+        sandbox => 1,     # defaults to 0
     });
+
+    # DOMAINS - see WebService::DNSMadeEasy::ManagedDomain
+    my @domains = $dns->managed_domains;
+    my $domain  = $dns->get_managed_domain('example.com');
+    my $domain  = $dns->create_managed_domain('stegasaurus.com');
+    $domain->update(...); # update some attributes
+    $domain->delete;
+    ...
+
+    # RECORDS - see WebService::DNSMadeEasy::ManagedDomain::Record
+    my @records = $domain->records();                # Returns all records
+    my @records = $domain->records(type => 'CNAME'); # Returns all CNAME records
+    my @records = $domain->records(name => 'www');   # Returns all wwww records
+    $record->update(...); # update some attributes
+    $record->delete;
+    ...
+
+    # MONITORS - see WebService::DNSMadeEasy::Monitor
+    my $monitor = $record->get_monitor;
+    $monitor->disable;     # disable failover and system monitoring
+    $monitor->update(...); # update some attributes
+    ...
 
 =head1 DESCRIPTION
 
@@ -170,7 +107,7 @@ Uses the sandbox api endpoint if set to true.  Creating a sandbox account is a
 good idea so you can test before messing with your live/production account.
 You can create a sandbox account here: L<https://sandbox.dnsmadeeasy.com>.
 
-=item http_agent_name
+=item user_agent_header
 
 Here you can set the User-Agent http header.  
 
@@ -194,7 +131,7 @@ Domain actions
 
 Domain attributes
 
-    $domain->as_hashref;
+    $domain->data; # returns all attributes as a hashref
     $domain->active_third_parties;
     $domain->created;
     $domain->delegate_name_servers;
@@ -228,7 +165,7 @@ Record actions
 
 Record attributes
 
-    $record->as_hashref;
+    $record->data; # returns all attributes as a hashref
     $record->description;
     $record->dynamic_dns;
     $record->failed;
@@ -260,6 +197,7 @@ Monitor actions
 
 Monitor attributes
 
+    $monitor->data; # returns all attributes as a hashref
     $monitor->auto_failover;
     $monitor->contact_list_id;
     $monitor->failover;

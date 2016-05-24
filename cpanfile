@@ -1,13 +1,10 @@
-requires 'DDP';
+requires 'Role::REST::Client';
 requires 'DateTime';
 requires 'DateTime::Format::HTTP';
 requires 'Digest::HMAC_SHA1';
 requires 'HTTP::Request';
-requires 'JSON::MaybeXS';
-requires 'LWP::UserAgent';
 requires 'Moo';
 requires 'String::CamelSnakeKebab';
-requires 'feature';
 
 on configure => sub {
     requires 'Module::Build::Tiny', '0.035';
@@ -15,5 +12,6 @@ on configure => sub {
 };
 
 on test => sub {
+    requires 'JSON';
     requires 'Test::More', '0.98';
 };

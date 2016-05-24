@@ -1,4 +1,5 @@
 use strict;
+
 use Test::More 0.98;
 
 use_ok $_ for qw(
@@ -6,7 +7,6 @@ use_ok $_ for qw(
     WebService::DNSMadeEasy::ManagedDomain
     WebService::DNSMadeEasy::ManagedDomain::Record
     WebService::DNSMadeEasy::Monitor
-    WebService::DNSMadeEasy::Response
 );
 
 done_testing;
