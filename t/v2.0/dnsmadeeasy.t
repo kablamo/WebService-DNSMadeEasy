@@ -19,19 +19,12 @@ SKIP: {
 
     isa_ok($dns,'WebService::DNSMadeEasy');
 
-    subtest setup => sub {
-        my $domain = $dns->get_managed_domain($domain_name);
-        #$domain->delete;
-        #$domain->wait_for_delete;
-        pass 'setup complete';
-    };
-
     #subtest 'managed domains' => sub {
     #    my @domains = $dns->managed_domains;
-    #    is scalar @domains, 0, "no managed domains";
+    #    ok scalar @domains > 0, "found some managed domains";
 
     #    my $domain = $dns->create_managed_domain($domain_name);
-    #    $domain->wait_for_pending_action;
+    #   #$domain->wait_for_pending_action; # can't test this in sandbox
     #    is $domain->name, $domain_name, "created $domain_name";
     #};
 
@@ -114,6 +107,16 @@ SKIP: {
         ok !$monitor->failover,      '!failover';
         ok !$monitor->monitor,       '!monitor';
         ok !$monitor->auto_failover, '!auto_failover';
+    };
+
+    subtest cleanup => sub {
+        note "deleting $domain_name in 5 seconds...";
+        sleep 5;
+        my $domain = $dns->get_managed_domain($domain_name);
+        eval { $domain->delete };
+        like $@, qr/Cannot delete a domain that is pending a create/;
+        #$domain->wait_for_delete; # can't test this in sandbox
+        pass 'cleanup complete';
     };
 }
 
