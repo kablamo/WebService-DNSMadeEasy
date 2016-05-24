@@ -1,9 +1,11 @@
-requires 'Role::REST::Client';
+requires 'DDP';
 requires 'DateTime';
 requires 'DateTime::Format::HTTP';
 requires 'Digest::HMAC_SHA1';
 requires 'HTTP::Request';
 requires 'Moo';
+requires 'MooX::Singleton';
+requires 'Role::REST::Client';
 requires 'String::CamelSnakeKebab';
 
 on configure => sub {
