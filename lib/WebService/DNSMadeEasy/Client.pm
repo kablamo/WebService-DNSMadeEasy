@@ -5,7 +5,7 @@ use DateTime;
 use DateTime::Format::HTTP;
 use Digest::HMAC_SHA1 qw(hmac_sha1 hmac_sha1_hex);
 
-with 'Role::REST::Client';
+with qw/MooX::Singleton Role::REST::Client/;
 
 has api_key           => (is => 'rw', required => 1);
 has secret            => (is => 'rw', required => 1);

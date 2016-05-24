@@ -3,14 +3,15 @@ package WebService::DNSMadeEasy::Monitor;
 use Moo;
 use String::CamelSnakeKebab qw/lower_camel_case/;
 
-has client    => (is => 'ro', required => 1);
 has record_id => (is => 'ro', required => 1);
-has data      => (is => 'rw', builder  => 1, lazy => 1, clearer => 1);
+has client    => (is => 'lazy');
 has path      => (is => 'lazy');
+has data      => (is => 'rw', builder  => 1, lazy => 1, clearer => 1);
 has response  => (is => 'rw', lazy => 1, builder => 1);
 
-sub _build_path { '/monitor/' . shift->record_id }
-sub _build_data { shift->response->data }
+sub _build_client { WebService::DNSMadeEasy::Client->instance }
+sub _build_path   { '/monitor/' . shift->record_id }
+sub _build_data   { shift->response->data }
 
 sub _build_response {
     my $self = shift;
@@ -103,18 +104,14 @@ sub create {
 
 1;
 
-# TODO: add this to synposis when client class is a singleton
-#
 #    use WebService::DNSMadeEasy::Monitor;
 #
 #    my $monitor = WebService::DNSMadeEasy::Monitor->new(
-#        client    => $client,
-#        record_id => $record_id,
+#        record_id => $record_id # required
 #    );
 #
 #    my $monitor = WebService::DNSMadeEasy::Monitor->create(
-#        client             => $client,
-#        record_id          => $record_id,
+#        record_id          => $record_id, # required
 #        port               => 8080,
 #        failover           => 'true',
 #        ip1                => '1.1.1.1',
@@ -127,6 +124,10 @@ sub create {
 #        auto_failover      => 'false',
 #    );
 
+
+=head1 NAME
+
+WebService::DNSMadeEasy::Monitor
 
 =head1 SYNOPSIS
 
@@ -175,5 +176,9 @@ sub create {
                            #         4      =>    DNS
                            #         5      =>    SMTP
                            #         6      =>    HTTP
+
+=head1 DESCRIPTION
+
+This object represents DNS failover and system monitoring configuration.
 
 =cut

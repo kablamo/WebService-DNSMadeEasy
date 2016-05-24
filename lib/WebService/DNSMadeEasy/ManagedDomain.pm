@@ -4,14 +4,15 @@ use Moo;
 use String::CamelSnakeKebab qw/lower_camel_case/;
 use WebService::DNSMadeEasy::ManagedDomain::Record;
 
-has client   => (is => 'ro', required => 1);
 has name     => (is => 'ro', required => 1);
+has client   => (is => 'lazy');
 has path     => (is => 'lazy');
 has data     => (is => 'rw', builder  => 1, lazy => 1, clearer => 1);
 has response => (is => 'rw', builder  => 1, lazy => 1, clearer => 1);
 
-sub _build_path { '/dns/managed' }
-sub _build_data { shift->response->data }
+sub _build_client { WebService::DNSMadeEasy::Client->instance }
+sub _build_path   { '/dns/managed' }
+sub _build_data   { shift->response->data }
 
 sub _build_response {
    my $self = shift;
@@ -116,23 +117,15 @@ sub records {
 
 1;
 
-# TODO: add this to synposis when client class is a singleton
-#
 #    use WebService::DNSMadeEasy::ManagedDomain;
 #
-#    my $domain = WebService::DNSMadeEasy::ManagedDomain->new(
-#        client => $client,
-#        name   => $name,
-#    );
-#
-#    my @domains = WebService::DNSMadeEasy::ManagedDomain->find(
-#        client => $client,
-#    );
-#
-#    my $domain = WebService::DNSMadeEasy::ManagedDomain->create(
-#        client => $client,
-#        name   => $name,
-#    );
+#    my $domain  = WebService::DNSMadeEasy::ManagedDomain->new(name => $name);
+#    my $domain  = WebService::DNSMadeEasy::ManagedDomain->create(name => $name);
+#    my @domains = WebService::DNSMadeEasy::ManagedDomain->find;
+
+=head1 NAME
+
+WebService::DNSMadeEasy::ManagedDomain
 
 =head1 SYNOPSIS
 
@@ -171,6 +164,10 @@ sub records {
     my @records = $domain->records();                # Returns all records
     my @records = $domain->records(type => 'CNAME'); # Returns all CNAME records
     my @records = $domain->records(name => 'www');   # Returns all wwww records
+
+=head1 DESCRIPTION
+
+This object represents a domain.
 
 =cut
 

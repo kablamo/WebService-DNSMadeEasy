@@ -11,13 +11,13 @@ has api_key           => (is => 'ro', required => 1);
 has secret            => (is => 'ro', required => 1);
 has sandbox           => (is => 'ro', default => sub { 0 });
 has user_agent_header => (is => 'rw', lazy => 1, builder => 1);
-has client            => (is => 'lazy', handles => [qw/get/]);
+has client            => (is => 'lazy');
 
 sub _build_user_agent_header { __PACKAGE__ . "/" . $VERSION }
 
 sub _build_client {
     my $self = shift;
-    my $client = WebService::DNSMadeEasy::Client->new(
+    my $client = WebService::DNSMadeEasy::Client->instance(
         api_key           => $self->api_key,
         secret            => $self->secret,
         sandbox           => $self->sandbox,
@@ -52,6 +52,10 @@ sub managed_domains { WebService::DNSMadeEasy::ManagedDomain->find(client => shi
 
 =encoding utf8
 
+=head1 NAME
+
+WebService::DNSMadeEasy
+
 =head1 SYNOPSIS
 
     use WebService::DNSMadeEasy;
@@ -66,7 +70,7 @@ sub managed_domains { WebService::DNSMadeEasy::ManagedDomain->find(client => shi
     my @domains = $dns->managed_domains;
     my $domain  = $dns->get_managed_domain('example.com');
     my $domain  = $dns->create_managed_domain('stegasaurus.com');
-    $domain->update(...); # update some attributes
+    $domain->update(...);
     $domain->delete;
     ...
 
@@ -75,14 +79,14 @@ sub managed_domains { WebService::DNSMadeEasy::ManagedDomain->find(client => shi
     my @records = $domain->records();                # Returns all records
     my @records = $domain->records(type => 'CNAME'); # Returns all CNAME records
     my @records = $domain->records(name => 'www');   # Returns all wwww records
-    $record->update(...); # update some attributes
+    $record->update(...);
     $record->delete;
     ...
 
     # MONITORS - see WebService::DNSMadeEasy::Monitor
     my $monitor = $record->get_monitor;
     $monitor->disable;     # disable failover and system monitoring
-    $monitor->update(...); # update some attributes
+    $monitor->update(...);
     ...
 
 =head1 DESCRIPTION

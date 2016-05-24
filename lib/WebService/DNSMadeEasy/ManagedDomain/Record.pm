@@ -4,12 +4,14 @@ use Moo;
 use String::CamelSnakeKebab qw/lower_camel_case/;
 use WebService::DNSMadeEasy::Monitor;
 
-has client    => (is => 'ro', required => 1);
 has domain_id => (is => 'rw', required => 1);
 has id        => (is => 'rw', required => 1);
+has client    => (is => 'lazy');
 has path      => (is => 'lazy');
 has data      => (is => 'rw', builder => 1, lazy => 1, clearer => 1);
 has response  => (is => 'rw', clearer => 1);
+
+sub _build_client { WebService::DNSMadeEasy::Client->instance }
 
 # object method
 sub _build_path {
@@ -190,19 +192,21 @@ sub create_monitor {
 #
 #    use WebService::DNSMadeEasy::ManagedDomain::Record;
 #
-#    my $record = WebService::DNSMadeEasy::ManagedDomain::Record->new(
-#        client => $client,
-#        name   => $name,
+#    my $record  = WebService::DNSMadeEasy::ManagedDomain::Record->new(
+#       id        => $id,
+#       domain_id => $domain_id,
 #    );
 #
 #    my @records = WebService::DNSMadeEasy::ManagedDomain::Record->find(
-#        client => $client,
+#       type => $type,
+#       name => $name,
 #    );
 #
-#    my $record = WebService::DNSMadeEasy::ManagedDomain::Record->create(
-#        client => $client,
-#        ...
-#    );
+#    my $record  = WebService::DNSMadeEasy::ManagedDomain::Record->create(...);
+
+=head1 NAME
+
+WebService::DNSMadeEasy::ManagedDomain::Record
 
 =head1 SYNOPSIS
 
@@ -249,5 +253,9 @@ sub create_monitor {
 
     # Returns a L<WebService::DNSMadeEasy::Monitor> object
     my $monitor = $record->get_monitor;
+
+=head1 DESCRIPTION
+
+This object represents a DNS record for a given domain.
 
 =cut
