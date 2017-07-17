@@ -12,7 +12,10 @@ has api_key           => (is => 'rw', required => 1);
 has secret            => (is => 'rw', required => 1);
 has user_agent_header => (is => 'rw', required => 1);
 has sandbox           => (is => 'rw', default => sub { 0 });
-has '+server'         => (builder => 1, lazy => 1);
+has '+server'         => (default => sub {
+    my $self = shift;
+    return _build_server($self);
+});
 
 sub _build_server {
     my ($self) = @_;
