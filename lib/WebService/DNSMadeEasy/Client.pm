@@ -14,15 +14,10 @@ has user_agent_header => (is => 'rw', required => 1);
 has sandbox           => (is => 'rw', default => sub { 0 });
 has '+server'         => (default => sub {
     my $self = shift;
-    return _build_server($self);
-});
-
-sub _build_server {
-    my ($self) = @_;
     return $self->sandbox
         ? "https://api.sandbox.dnsmadeeasy.com/V2.0"
         : "https://api.dnsmadeeasy.com/V2.0";
-}
+});
 
 sub default_headers {
     my ($self, $date) = @_;
