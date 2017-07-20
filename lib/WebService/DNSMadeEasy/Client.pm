@@ -12,14 +12,12 @@ has api_key           => (is => 'rw', required => 1);
 has secret            => (is => 'rw', required => 1);
 has user_agent_header => (is => 'rw', required => 1);
 has sandbox           => (is => 'rw', default => sub { 0 });
-has '+server'         => (builder => 1, lazy => 1);
-
-sub _build_server {
-    my ($self) = @_;
+has '+server'         => (default => sub {
+    my $self = shift;
     return $self->sandbox
         ? "https://api.sandbox.dnsmadeeasy.com/V2.0"
         : "https://api.dnsmadeeasy.com/V2.0";
-}
+});
 
 sub default_headers {
     my ($self, $date) = @_;
